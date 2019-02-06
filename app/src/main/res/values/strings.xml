@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CS541_2048</string>
+    <string name="score">Score</string>
 </resources>
