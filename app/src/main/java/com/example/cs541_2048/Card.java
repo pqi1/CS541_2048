@@ -40,7 +40,7 @@ public class Card extends FrameLayout {
     }
 
     public boolean equals(Card card){
-        return getNum() == card.getNum();
+        return this.getNum() == card.getNum();
     }
 
 }

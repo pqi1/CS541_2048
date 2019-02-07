@@ -18,17 +18,20 @@ public class GameView extends GridLayout {
 
     public GameView(Context context) {
         super(context);
-        initGameView();
+        //initGameView();
+        startGame();
     }
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initGameView();
+//        initGameView();
+        startGame();
     }
 
     public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initGameView();
+//        initGameView();
+        startGame();
     }
 
     @Override
@@ -40,8 +43,18 @@ public class GameView extends GridLayout {
         addCards(cardWidth, cardWidth);
     }
 
+    private void printOutMatrix(){
+        System.out.println("-------------------------------");
+
+        for(int x = 0; x < 4; x++){
+            for(int y = 0; y < 4; y++){
+                System.out.println("这是xy： "+ x + y + this.cardsMap[x][y].getNum());
+            }
+        }
+    }
+    //add and initialize the cardsMap
     private void addCards(int cardWidth, int cardHeight){
-        Card card = null;
+        Card card;
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < 4; j++){
                 card = new Card(getContext());
@@ -61,8 +74,11 @@ public class GameView extends GridLayout {
 
         return (cardWidth - 10)/4;
     }
-
+    //set the card number to 0, and add two random number
     private void startGame(){
+        addCards(getCardWidth(), getCardWidth());
+        setColumnCount(4);
+        setBackgroundColor(0xffbbada0);
         for(int y = 0; y < 4; y++){
             for(int x = 0; x < 4; x++){
                 cardsMap[x][y].setNum(0);
@@ -70,52 +86,12 @@ public class GameView extends GridLayout {
         }
         addRandomNum();
         addRandomNum();
-    }
-
-    private void initGameView(){
-        setColumnCount(4);
-
-        setBackgroundColor(0xffbbada0);
-        addCards(getCardWidth(), getCardWidth());
-
-        startGame();
 
         setOnTouchListener(new OnTouchListener() {
-            //float numbers to record the finger position
-            private float startX, startY, offsetX, offsetY;
-
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        startX = event.getX();
-                        startY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        offsetX = event.getX() - startX;
-                        offsetY = event.getY() - startY;
-
-                        if(Math.abs(offsetX) > Math.abs(offsetY)){
-                            if(offsetX < -5){
-                                System.out.println("Left");
-                                swipeLeft();
-                            } else if(offsetX > 5){
-                                System.out.println("Right");
-                                swipeRight();
-                            }
-                        }else{
-                            if(offsetY < -5){
-                                System.out.println("Up");
-                                swipeUp();
-                            }else if(offsetY > 5){
-                                System.out.println("Down");
-                                swipeDown();
-                                }
-
-                        }
-                        break;
-                }
-
-                return true;
+                printOutMatrix();
+                return false;
             }
         });
     }
@@ -134,6 +110,78 @@ public class GameView extends GridLayout {
         Point point = emptyPoints.remove((int)(Math.random()*emptyPoints.size()));
         cardsMap[point.x][point.y].setNum(Math.random()>0.1?2:4);
     }
+//
+//    private void initGameView() {
+//        startGame();
+//
+//        //printOutMatrix();
+//
+////        setOnTouchListener(new OnTouchListener() {
+////            @Override
+////            public boolean onTouch(View v, MotionEvent event) {
+////                printOutMatrix();
+////
+////                return false;
+////            }
+////        });
+//        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+//        printOutMatrix();
+//        System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+//
+//
+//    }
+
+//
+//        setOnTouchListener(new OnTouchListener() {
+//            //float numbers to record the finger position
+//            private float startX, startY, offsetX, offsetY;
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                printOutMatrix();
+//
+//                return true;
+//            }true
+
+
+//            public boolean onTouch(View v, MotionEvent event) {
+//                printOutMatrix();
+//                switch (event.getAction()){
+//                    case MotionEvent.ACTION_DOWN:
+//                        startX = event.getX();
+//                        startY = event.getY();
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        offsetX = event.getX() - startX;
+//                        offsetY = event.getY() - startY;
+//
+//                        if(Math.abs(offsetX) > Math.abs(offsetY)){
+//                            if(offsetX < -5){
+//                                System.out.println("Left");
+//                                swipeLeft();
+//                            } else if(offsetX > 5){
+//                                System.out.println("Right");
+//                                swipeRight();
+//                            }
+//                        }else{
+//                            if(offsetY < -5){
+//                                System.out.println("Up");
+//                                swipeUp();
+//                            }else if(offsetY > 5){
+//                                System.out.println("Down");
+//                                swipeDown();
+//                                }
+//
+//                        }
+//                        break;
+//                }
+
+//                return true;
+//            }
+//        });
+//    }
+
+
 
 
 
@@ -158,21 +206,26 @@ public class GameView extends GridLayout {
     }
 
     private void swipeLeft(){
+        printOutMatrix();
         for(int y = 0; y < 4; y++){
             for(int x = 0; x < 4; x++){
-                for(int x1 = x+1; x1<4; x1++){
-                    if(cardsMap[x1][y].getNum() > 0){
-                        if(cardsMap[x][y].getNum()<=0){
-                            cardsMap[x][y].setNum(cardsMap[x1][y].getNum());
-                            cardsMap[x1][y].setNum(0);
-                            x--;
-                            break;
-                        }else if(cardsMap[x][y].equals(cardsMap[x1][y])){
-                            cardsMap[x][y].setNum(cardsMap[x][y].getNum()*2);
-                            cardsMap[x1][y].setNum(0);
-                            break;
-                        }
-                    }
+                for(int x_right = x+1; x_right<4; x_right++){
+                    System.out.println(x_right);
+                    System.out.println("this is the number" + cardsMap[x][y].getNum());
+//                    if(cardsMap[x_right][y].getNum() > 0){
+//                        System.out.println("进来了");
+//                        if(cardsMap[x][y].getNum()<=0){
+//                            cardsMap[x][y].setNum(cardsMap[x_right][y].getNum());
+//                            cardsMap[x_right][y].setNum(0);
+//                            System.out.println("hello");
+//                            x--;
+//                            break;
+//                        }else if(cardsMap[x][y].equals(cardsMap[x_right][y])){
+//                            cardsMap[x][y].setNum(cardsMap[x][y].getNum()*2);
+//                            cardsMap[x_right][y].setNum(0);
+//                            break;
+//                        }
+//                    }
                 }
             }
 
