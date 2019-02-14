@@ -23,7 +23,7 @@ public class Game : MonoBehaviour {
         bool down = Input.GetKeyDown(KeyCode.DownArrow), up = Input.GetKeyDown(KeyCode.UpArrow), left = Input.GetKeyDown(KeyCode.LeftArrow), right = Input.GetKeyDown(KeyCode.RightArrow);
 
         if (down || up || left || right) {
-
+            PrepareTilesForMerging();
             if (down) {
                 Debug.Log("Player pressed Down");
                 MoveAllTiles(Vector2.down);
@@ -133,15 +133,22 @@ public class Game : MonoBehaviour {
                     UpdateGrid();
                 }
                 else {
-                    tile.transform.localPosition += -(Vector3)direction;
 
-                    if (tile.transform.localPosition == (Vector3)startPos)
+                    if (!CheckAndCombineTiles(tile))
                     {
-                        return false;
-                    } else
-                    {
-                        return true;
+
+                        tile.transform.localPosition += -(Vector3)direction;
+
+                        if (tile.transform.localPosition == (Vector3)startPos)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
                     }
+
                 }
             } else {
                 tile.transform.localPosition += -(Vector3)direction;
@@ -158,7 +165,35 @@ public class Game : MonoBehaviour {
         }
     }
 
+    bool CheckAndCombineTiles(Transform movingTile) {
+        Vector2 pos = movingTile.transform.localPosition;
 
+        Transform collidingTile = grid[(int)pos.x,(int)pos.y];
+
+        int movingTileValue = movingTile.GetComponent<Tile>().tileValue;
+        int collidingTileValue = collidingTile.GetComponent<Tile>().tileValue;
+
+        if (movingTileValue == collidingTileValue && !movingTile.GetComponent<Tile>().mergedThisTurn && !collidingTile.GetComponent<Tile>().mergedThisTurn) {
+            Destroy(movingTile.gameObject);
+            Destroy(collidingTile.gameObject);
+
+            grid[(int)pos.x, (int)pos.y] = null;
+
+            string newTileName = "tile_" + movingTileValue * 2;
+
+            GameObject newTile = (GameObject)Instantiate(Resources.Load(newTileName, typeof(GameObject)), pos, Quaternion.identity);
+
+            newTile.transform.parent = transform;
+
+            newTile.GetComponent<Tile>().mergedThisTurn = true;
+
+            UpdateGrid();
+
+            return true;
+        }
+
+        return false;
+    }
 
     void GenerateNewTile(int howMany) {
         for (int i = 0; i < howMany; ++i) {
@@ -238,6 +273,12 @@ public class Game : MonoBehaviour {
             return true;
         }
         return false;
+    }
+
+    void PrepareTilesForMerging() {
+        foreach (Transform t in transform) {
+            t.GetComponent<Tile>().mergedThisTurn = false;
+        }
     }
 
 
