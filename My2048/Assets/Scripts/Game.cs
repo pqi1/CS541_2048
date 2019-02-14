@@ -26,23 +26,139 @@ public class Game : MonoBehaviour {
 
             if (down) {
                 Debug.Log("Player pressed Down");
+                MoveAllTiles(Vector2.down);
             }
 
             if (up) {
                 Debug.Log("Player pressed up");
+                MoveAllTiles(Vector2.up);
             }
 
             if (left) {
                 Debug.Log("Player pressed left");
+                MoveAllTiles(Vector2.left);
             }
 
             if (right) {
                 Debug.Log("Player pressed right");
+                MoveAllTiles(Vector2.right);
             }
 
         }
 
     }
+
+    void MoveAllTiles(Vector2 direction) {
+        int tilesMovedCount = 0;
+        if (direction == Vector2.left){
+            for (int x = 0; x < gridWidth; x++) {
+                for (int y = 0; y < gridHeight; y++) {
+                    if (grid[x,y] != null) {
+                        if (MoveTile(grid[x, y], direction)) {
+                            tilesMovedCount++;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (direction == Vector2.right)
+        {
+            for (int x = gridWidth-1; x >= 0; x--)
+            {
+                for (int y = 0; y < gridHeight; y++)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        if (MoveTile(grid[x, y], direction))
+                        {
+                            tilesMovedCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (direction == Vector2.down)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                for (int y = 0; y < gridHeight-1; y++)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        if (MoveTile(grid[x, y], direction))
+                        {
+                            tilesMovedCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (direction == Vector2.up)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                for (int y = gridHeight-1; y >= 0; y--)
+                {
+                    if (grid[x, y] != null)
+                    {
+                        if (MoveTile(grid[x, y], direction))
+                        {
+                            tilesMovedCount++;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (tilesMovedCount != 0) {
+            GenerateNewTile(1);
+        }
+
+    }
+
+    bool MoveTile(Transform tile, Vector2 direction) {
+        Vector2 startPos = tile.localPosition;
+
+        while(true) {
+            tile.transform.localPosition += (Vector3)direction;
+            Vector2 pos = tile.transform.localPosition;
+            if (CheckIsInsideGrid(pos)) {
+                if (CheckIsAtValidPosition(pos))
+                {
+                    UpdateGrid();
+                }
+                else {
+                    tile.transform.localPosition += -(Vector3)direction;
+
+                    if (tile.transform.localPosition == (Vector3)startPos)
+                    {
+                        return false;
+                    } else
+                    {
+                        return true;
+                    }
+                }
+            } else {
+                tile.transform.localPosition += -(Vector3)direction;
+
+                if (tile.transform.localPosition == (Vector3)startPos)
+                {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+
+        }
+    }
+
+
 
     void GenerateNewTile(int howMany) {
         for (int i = 0; i < howMany; ++i) {
@@ -107,6 +223,21 @@ public class Game : MonoBehaviour {
         int randY = y.ElementAt(randIndex);
 
         return new Vector2(randX,randY);
+    }
+
+    bool CheckIsInsideGrid(Vector2 pos) {
+        if (pos.x >= 0 && pos.x <= gridWidth -1 && pos.y <= gridHeight -1 && pos.y >= 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool CheckIsAtValidPosition(Vector2 pos) {
+        if (grid[(int)pos.x, (int)pos.y] == null) {
+            return true;
+        }
+        return false;
     }
 
 
