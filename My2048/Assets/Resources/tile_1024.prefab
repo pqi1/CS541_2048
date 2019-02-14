@@ -52,6 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3140a32d22d225b4bac912fded9df3c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tileValue: 1024
+  mergedThisTurn: 0
 --- !u!212 &212296872642215006
 SpriteRenderer:
   m_ObjectHideFlags: 1

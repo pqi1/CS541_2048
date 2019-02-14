@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour {
 
     public static int gridWidth = 4, gridHeight = 4;
 
     public static Transform[,] grid = new Transform[gridWidth, gridHeight];
+
+    public Canvas gameOverCanves;
+    public Text gameScoreText;
+    public int score = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -18,10 +23,13 @@ public class Game : MonoBehaviour {
 	void Update () {
         bool isGameOver = CheckGameOver();
 
-        if (isGameOver != true) {
+        if (isGameOver != true)
+        {
             CheckUserInput();
         }
-
+        else {
+            gameOverCanves.gameObject.SetActive(true);
+        }
     }
 
     void CheckUserInput() {
@@ -51,6 +59,11 @@ public class Game : MonoBehaviour {
 
         }
 
+    }
+
+    void UpdateScore() {
+        string fmt = "00000000";
+        gameScoreText.text = score.ToString(fmt);
     }
 
     bool CheckGameOver() {
@@ -233,6 +246,9 @@ public class Game : MonoBehaviour {
             newTile.GetComponent<Tile>().mergedThisTurn = true;
 
             UpdateGrid();
+
+            score += movingTileValue * 2;
+            UpdateScore();
 
             return true;
         }

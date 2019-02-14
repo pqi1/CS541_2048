@@ -444,6 +444,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7115de7d565fc47ad669d116060319, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameOverCanves: {fileID: 445338524}
+  gameScoreText: {fileID: 2068767494}
+  score: 0
 --- !u!4 &576973577
 Transform:
   m_ObjectHideFlags: 0
