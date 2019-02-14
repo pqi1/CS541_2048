@@ -16,8 +16,13 @@ public class Game : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        CheckUserInput();
-	}
+        bool isGameOver = CheckGameOver();
+
+        if (isGameOver != true) {
+            CheckUserInput();
+        }
+
+    }
 
     void CheckUserInput() {
         bool down = Input.GetKeyDown(KeyCode.DownArrow), up = Input.GetKeyDown(KeyCode.UpArrow), left = Input.GetKeyDown(KeyCode.LeftArrow), right = Input.GetKeyDown(KeyCode.RightArrow);
@@ -46,6 +51,46 @@ public class Game : MonoBehaviour {
 
         }
 
+    }
+
+    bool CheckGameOver() {
+        if (transform.childCount < gridWidth * gridHeight) {
+            return false;
+        }
+
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                Transform currentTile = grid[x, y];
+                Transform tileBelow = null;
+                Transform tileBeside = null;
+
+                if (y != 0) {
+                    tileBelow = grid[x, y - 1];
+                }
+
+                if (x != gridWidth - 1) {
+                    tileBeside = grid[x + 1, y];
+                }
+
+                if (tileBeside != null) {
+                    if (currentTile.GetComponent<Tile>().tileValue == tileBeside.GetComponent<Tile>().tileValue) {
+                        return false;
+                    }
+                }
+
+                if (tileBelow != null)
+                {
+                    if (currentTile.GetComponent<Tile>().tileValue == tileBelow.GetComponent<Tile>().tileValue)
+                    {
+                        return false;
+                    }
+                }
+
+            }
+        }
+        return true;
     }
 
     void MoveAllTiles(Vector2 direction) {
