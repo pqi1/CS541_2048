@@ -11,7 +11,7 @@ public class Game : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        GenerateNewTile(2);
 	}
 	
 	// Update is called once per frame
@@ -45,11 +45,48 @@ public class Game : MonoBehaviour {
     }
 
     void GenerateNewTile(int howMany) {
-        for () {
+        for (int i = 0; i < howMany; ++i) {
+            Vector2 locationForNewTile = GetRandomLocationForNewTile();
 
+            string tile = "tile_2";
+
+            float chanceOfTwo = Random.Range(0f,1f);
+
+            if (chanceOfTwo > 0.9f) {
+                tile = "tile_4";
+            }
+
+            GameObject newTile = (GameObject)Instantiate(Resources.Load(tile,typeof(GameObject)), locationForNewTile, Quaternion.identity);
+
+            newTile.transform.parent = transform;
         }
 
+        UpdateGrid();
+
     }
+
+    void UpdateGrid() {
+        for (int y = 0; y < gridHeight; ++y) {
+            for (int x = 0; x < gridWidth; ++x) {
+                if (grid[x,y] != null) {
+                    if (grid[x,y].parent == transform) {
+                        grid[x, y] = null;
+
+                    }
+                }
+            }
+        }
+
+        foreach (Transform tile in transform) {
+            Vector2 v = new Vector2(Mathf.Round(tile.position.x), Mathf.Round(tile.position.y));
+
+            grid[(int)v.x,(int)v.y] = tile;
+        }
+
+
+    }
+
+
 
     Vector2 GetRandomLocationForNewTile() {
         List<int> x = new List<int>();
