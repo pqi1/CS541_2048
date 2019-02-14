@@ -5,5 +5,6 @@
   Then I implenment the 2048 game by using unity and C#. I added some cool animation when you moving arround the blocks. Too bad I cannot show this on the screenshot.
   
 Tutorial used:
+
   https://www.youtube.com/watch?v=PIVcfEfw58w&list=PLiRrp7UEG13bjai3mwraHEqjxBfoRJadd&index=1
   https://www.youtube.com/watch?v=ppDPrLduzzc&list=PL1JImX8WgOy-hHlz6-sBOu9jQc3kzGMci
