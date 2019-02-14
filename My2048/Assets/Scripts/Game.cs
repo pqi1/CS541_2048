@@ -14,6 +14,9 @@ public class Game : MonoBehaviour {
     public Text gameScoreText;
     public int score = 0;
 
+    private int numberofCoroutinesRunngin = 0;
+    private bool generateNewTileThisTurn = true;
+
 	// Use this for initialization
 	void Start () {
         GenerateNewTile(2);
@@ -21,15 +24,25 @@ public class Game : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        bool isGameOver = CheckGameOver();
-
-        if (isGameOver != true)
+        if (numberofCoroutinesRunngin == 0)
         {
-            CheckUserInput();
-        }
-        else {
-            gameOverCanves.gameObject.SetActive(true);
-        }
+            if (!generateNewTileThisTurn)
+            {
+                generateNewTileThisTurn = true;
+                GenerateNewTile(1);
+            }
+
+            bool isGameOver = CheckGameOver();
+
+            if (isGameOver != true)
+            {
+                CheckUserInput();
+            }
+            else
+            {
+                gameOverCanves.gameObject.SetActive(true);
+            }
+        }          
     }
 
     void CheckUserInput() {
@@ -271,9 +284,15 @@ public class Game : MonoBehaviour {
             GameObject newTile = (GameObject)Instantiate(Resources.Load(tile,typeof(GameObject)), locationForNewTile, Quaternion.identity);
 
             newTile.transform.parent = transform;
-        }
 
-        UpdateGrid();
+            grid[(int)newTile.transform.localPosition.x, (int)newTile.transform.localPosition.y] = newTile.transform;
+
+            newTile.transform.localScale = new Vector2(0, 0);
+
+            newTile.transform.localPosition = new Vector2(newTile.transform.localPosition.x+0.5f, newTile.transform.localPosition.y + 0.5f);
+
+            StartCoroutine(NewTilePopIn( newTile, new Vector2(0,0), new Vector2(1,1), 10f, newTile.transform.localPosition, new Vector2(newTile.transform.localPosition.x-0.5f, newTile.transform.localPosition.x - 0.5f)));
+        }
 
     }
 
@@ -306,6 +325,9 @@ public class Game : MonoBehaviour {
 
         for (int j = 0; j < gridWidth; j++) {
             for (int i = 0; i < gridHeight; i++) {
+                //if (!CheckIsAtValidPosition(new Vector2(j, i))) {
+                //    grid[j, i] = null;
+                //}
                 if (grid[j, i] == null) {
                     x.Add(j);
                     y.Add(i);
@@ -345,6 +367,38 @@ public class Game : MonoBehaviour {
 
     public void PlayAgain() {
         grid = new Transform[gridWidth, gridHeight];
+
+        score = 0;
+
+        List<GameObject> children = new List<GameObject>();
+
+        foreach (Transform t in transform) {
+            children.Add(t.gameObject);
+        }
+
+        children.ForEach(t => DestroyImmediate(t));
+
+        gameOverCanves.gameObject.SetActive(false);
+
+        UpdateScore();
+
+        GenerateNewTile(2);
+
+    }
+
+    IEnumerator NewTilePopIn(GameObject tile, Vector2 initialScale, Vector2 finalScale, float timeScale, Vector2 initialPosition, Vector2 finalPosition) {
+        numberofCoroutinesRunngin++;
+        float progress = 0;
+        while (progress <= 1) {
+            tile.transform.localScale = Vector2.Lerp(initialScale,finalScale,progress);
+            tile.transform.localPosition = Vector2.Lerp(initialPosition,finalPosition, progress);
+            progress += Time.deltaTime * timeScale;
+            yield return null;
+        }
+        tile.transform.localScale = finalScale;
+        tile.transform.localPosition = finalPosition;
+
+        numberofCoroutinesRunngin--;
     }
 
 }
